@@ -47,6 +47,12 @@ array_list, arguments, document.querySelectorAll
    }
  }
 
+function _curryr(fn){
+  return function(a,b){
+    return arguments.length === 2? fn(b,a) : function(b){return fn(b,a);};
+  }
+}
+
  var add = _curry(function(a, b) {
    return a + b
  })
@@ -67,11 +73,81 @@ var user = {
 # _reduce 만들기
 ```js
 function _reduce(list, iter, memo) {
-  _each(list, function (val) {
-    memo = iter(memo, val);
+  _each(list, function (fn) {
+    memo = iter(memo, fn);
   });
   return memo;
 }
 
 console.log(_reduce([1, 2, 3, 4], add, 0)); // 10
+```
+
+# 파이프라인, _go, _pipe, 화살표 함수
+## _pipe
+함수를 연속적으로 실행할 수 있게 함.
+```js
+function _pipe() {
+  var fns = arguments;
+  return function(arg) {
+    return _reduce(fns, function(arg, fn) {
+      return fn(arg)
+    }, arg)
+  }
+}
+
+// 함수 인자를 넣고, 이 순서대로 실행된다. 
+var f1 = _pipe(
+  function(a) { return a + 1 },
+  function(b) { return b + 2 }
+);
+
+f1(1) // 4
+```
+# _go
+```js
+_go(1, 
+function(a) { return a + 1 },
+function(a) { return a + 2 },
+function(a) { return a + 3 },
+console.log
+) // 7
+
+function _go(arg) {
+  return _pipe.apply(null, Array.prototype.slice.call(arguments).slice(1))(arg)
+}
+```
+
+# curry_r을 사용하면 더 간결하게 사용 가능
+```js
+var _map = _curryr(_map)
+var _filter = _curryr(_filter)
+```
+# 정리
+```js
+var users = [{ age: 10, name: '1' }, { age: 31, name: '2' }]
+var temp_users = []
+for (var i = 0; i < users.length; i++) {
+  if (users[i].age >= 30) {
+    temp_users.push()
+  }
+}
+
+for (var i = 0; i < temp_users.length; i++) {
+  console.log(temp_users['name'])
+}
+```
+위의 코드가 아래의 코드로 변경됐다.
+```js
+var _map = _curryr(_map)
+
+_go(users,
+_filter(user => user.age < 30),
+_map(_get('name')),
+console.log)
+
+
+_go([1,2,3], 
+_map(n => n+1),
+console.log
+)
 ```
