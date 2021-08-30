@@ -153,3 +153,6 @@ _map(n => n+1),
 console.log
 )
 ```
+
+# codepen
+https://codepen.io/qkreltms/pen/WNOrGPw?editors=1012
