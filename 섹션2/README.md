@@ -49,7 +49,7 @@ array_list, arguments, document.querySelectorAll
 
 function _curryr(fn){
   return function(a,b){
-    return arguments.length === 2? fn(b,a) : function(b){return fn(b,a);};
+    return arguments.length === 2 ? fn(b,a) : function(b){return fn(b,a);};
   }
 }
 
@@ -147,6 +147,8 @@ console.log)
 
 
 _go([1,2,3], 
+// curryr을 사용해 함수가 첫번째 인자로 들어올 수 있도록 해준다.
+// 하지만 결국에 map에 들어오는 인자순서는 그 형식에 맞게 들어오게 함.(list, mapper)
 _map(n => n+1),
 console.log
 )
