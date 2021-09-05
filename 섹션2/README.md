@@ -156,3 +156,63 @@ console.log
 
 # codepen
 https://codepen.io/qkreltms/pen/WNOrGPw?editors=1012
+
+# _each의 외부 다형성 높이기
+# 1. _each에 null 넣어도 에러 안나게
+```js
+_each(null, console.log)
+
+function _each(list, iter) {
+  for (var i = 0; i < list.length; i++) {
+    iter(list[i]);
+  }
+  return list;
+}
+// 위 에서 아래로
+// 참고: _get은 curry 함수에 포장되어있음
+var _length = _get('length')
+function _each(list, iter) {
+  for (var i = 0; i < _length(list); i++) {
+    iter(list[i]);
+  }
+  return list;
+}
+```
+
+# 2. _keys 만들기
+```js
+Object.keys(null) // null 처리되도록 만들어 연속적인 함수 실행이 문제 없도록.
+```
+
+```js
+function _is_object(obj) {
+  // 참고: typeof [] === 'object'
+  return typeof obj === 'object' && !!obj;
+}
+function _keys(obj) {
+  return _is_object(obj) ? Object.keys(obj) : []; 
+}
+```
+
+# 3. _each에서 object 실행시키기
+```js
+_each({
+  1: '1',
+  2: '2',
+  3: '3',
+}, function (name) { console.log(name) })
+```
+
+```js
+function _each(list, iter) {
+  // array, object 상관없음
+  var keys = _keys(list);
+  for (var i = 0, len = keys.length; i < len; i++) {
+    iter(list[i]);
+  }
+  return list;
+}
+
+// each를 위와 같이 변경하면 _go도 적용됨
+_go({ 1: '1' }, _map(function(name) { return name }), console.log)
+```
