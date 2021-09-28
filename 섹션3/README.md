@@ -1,5 +1,5 @@
 # 컬렉션(데이터 집합) 중심 프로그래밍의 4가지 유형과 함수
-1. 수집하기 - map, ,keys, values, pluck, ...
+## 1. 수집하기 - map ,keys, values, pluck, ...
 
 map: 어떤 프로퍼티의 값을 수집한다.
 
@@ -56,6 +56,69 @@ function _pluck(data, key) {
 console.log(_pluck(users, 'age'))
 ```
 
-2. 거르기 - filter, reject, compact, without, ...
+## 2. 거르기 - filter, reject, compact, without, ...
+
+### filter
+조건문에 속하는 값만 반환한다.
+```js
+function _filter(list, predi) {
+  var new_list = [];
+  _each(list, function(val) {
+    if (predi(val)) new_list.push(val);
+  });
+  return new_list;
+}
+```
+```js
+// 조건문에 속하는 값만 반환한다.
+_filter(users, function(usere) {
+  return user.age > 30
+})
+
+// 조건문에 속하는 값을 제외한다.(filter와 반대)
+_reject(users, function(user) {
+  return user.age > 30
+})
+```
+
+### reject 함수
+조건문에 속하는 값을 제외한다.(filter와 반대)
+```js
+function _reject(data, predi) {
+  return _filter(data, function(val) {
+    return !predi(val)
+  })
+}
+```
+
+reject함수는 negate함수를 사용하면 더 간결해질 수 있다.
+```js
+// 결과를 반대로 바꾸는 함수
+function _negate(func) {
+  return function(val) {
+    return !func(val)
+  }
+}
+
+function _reject(data, predi) {
+  return _filter(data, _negate(predi))
+}
+```
+### compact
+배열에서 Truthy(falsee, 0, -0, 0n, "", null, undefined, NaN가 아닌 값)인 값만 걸러주는 함수 
+```js
+// 긍정적인 값만 남기는 함수
+_compact([1,2,0,false,null, {}]) // [1,2, {...}]
+```
+
+```js
+function _identity(val) {
+  return val
+}
+
+// itentity함수가 호출되면 filter 내부의 에서 함수 호출 되고 그 결과값 중 truthy인 값은 if 문을 통과하게 된다.
+var _compact = _filter(_identity)
+```
+
 3. 찾아내기 - find, some, every, ...
 4. 줄이기 - reduce, min, max, group_by, count_by, ...
