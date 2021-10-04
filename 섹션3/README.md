@@ -44,7 +44,7 @@ function _each(list, iter) {
   return list;
 }
 ```
-_pluck: map과 마찬가지로 어떤 프로퍼티의 값을 수집한다, 단 더 간결하게
+_pluck: map과 같음, 단 더 간결하게
 
 ```js
 function _pluck(data, key) {
@@ -59,7 +59,7 @@ console.log(_pluck(users, 'age'))
 ## 2. 거르기 - filter, reject, compact, without, ...
 
 ### filter
-조건문에 속하는 값만 반환한다.
+조건문에 속하는 값들만 반환한다.
 ```js
 function _filter(list, predi) {
   var new_list = [];
@@ -82,7 +82,7 @@ _reject(users, function(user) {
 ```
 
 ### reject 함수
-조건문에 속하는 값을 제외한다.(filter와 반대)
+조건문에 속하는 값들을 제외한다.(filter와 반대)
 ```js
 function _reject(data, predi) {
   return _filter(data, function(val) {
@@ -120,5 +120,65 @@ function _identity(val) {
 var _compact = _filter(_identity)
 ```
 
-3. 찾아내기 - find, some, every, ...
+## 3. 찾아내기 - find, some, every, ...
+### 1. find 
+컬렉션에서 조건에 따라 먼저 찾은 값을(하나만) 반환한다.
+```js
+function _find(list, iter) {
+  /**
+  function _keys(obj) {
+    return _is_object(obj) ? Object.keys(obj) : []; 
+  }
+  **/
+  var keys = _keys(list) // 무조건 배열로 나온다.
+  for (var i = 0, len=keys.length; i<len; i++) {
+    var val = list[keys[i]] 
+    if (perdi(list[keys[i]])) return val
+  }
+}
+
+console.log(_find(users, function(user) {
+  return user.age < 30
+})) // 반환: { id: 40, name: 'a', age: 29}
+```
+
+### 2. find_index
+find와 같지만 인덱스를 반환한다.
+
+```js
+function _find_index(list, iter) {
+  /**
+  function _keys(obj) {
+    return _is_object(obj) ? Object.keys(obj) : []; 
+  }
+  **/
+  var keys = _keys(list) // 무조건 배열로 나온다.
+  for (var i = 0, len=keys.length; i<len; i++) {
+    if (perdi(list[keys[i]])) return i
+  }
+}
+
+// 또 다른 방법
+// #1
+_get(_find(users, function(user) {
+  return user.id === 50
+}), 'name')
+
+// #2
+// curry를 사용해야 _go 안에서 사용 가능하다.
+var _find = _curryr(function(list, pred) {
+  var keys = _keys(list) // 무조건 배열로 나온다.
+  for (var i = 0, len=keys.length; i<len; i++) {
+    var val = list[keys[i]] 
+    if (perdi(list[keys[i]])) return val
+  }
+})
+
+_go(users,
+_find(function(user) {
+  return user.id === 50
+}), 
+_get('name')),
+console.log
+```
 4. 줄이기 - reduce, min, max, group_by, count_by, ...
